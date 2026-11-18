@@ -112,7 +112,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
                     triggerHoldMillis = trigger?.holdMillis ?: TriggerConfig.DEFAULT_MS,
                     triggerSwap = trigger?.swapTaps ?: false, triggerSavedSwap = trigger?.swapTaps ?: false,
                     triggerLoading = false, triggerDirty = trigger == null, triggerError = trigger == null,
-                    triggerNote = if (trigger == null) "触发设置读取失败，请重新保存" else null)
+                    triggerNote = if (trigger == null) "Could not read trigger settings. Please save them again." else null)
             }
         }
     }
@@ -135,7 +135,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
         if (state.value.triggerLoading || state.value.triggerSaving) return
         val millis = state.value.triggerText.toIntOrNull()
         if (millis == null || millis !in TriggerConfig.MIN_MS..TriggerConfig.MAX_MS) {
-            mutable.update { it.copy(triggerNote = "请输入 200–3000 的整数毫秒", triggerError = true) }
+            mutable.update { it.copy(triggerNote = "Enter an integer from 200 to 3000 milliseconds", triggerError = true) }
             return
         }
         mutable.update { it.copy(triggerSaving = true, triggerNote = null, triggerError = false) }
@@ -143,12 +143,12 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
             try {
                 val swap = state.value.triggerSwap
                 withContext(Dispatchers.IO) { PrivateSettings.write(triggerFile, TriggerConfig(millis, swap).json()) }
-                val message = "已保存，从下一次长按开始使用新设置"
+                val message = "Saved. The new settings apply from the next long press."
                 mutable.update { it.copy(triggerText = millis.toString(), triggerHoldMillis = millis,
                     triggerSavedSwap = swap, triggerDirty = false, triggerNote = message) }
                 notices.send(UiNotice(message, saved = true))
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { mutable.update { it.copy(triggerNote = "未能确认触发设置保存，请重试", triggerError = true) } }
+            catch (_: Exception) { mutable.update { it.copy(triggerNote = "Could not confirm that trigger settings were saved. Please try again.", triggerError = true) } }
             finally { mutable.update { it.copy(triggerSaving = false) } }
         }
     }
@@ -168,13 +168,13 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
                     checks.saveSearch(call, config, model, searchFile)
                 }
                 savedSearch = form
-                val message = result + "，已保存"
+                val message = result + "; saved"
                 mutable.update { it.copy(searchDirty = it.search != form, searchCheck = message,
                     searchCheckPassed = if (!form.enabled) null else true) }
                 notices.send(UiNotice(message, saved = true))
             } catch (cancelled: CancellationException) {
                 if (!kotlin.coroutines.coroutineContext.isActive) throw cancelled
-                mutable.update { it.copy(searchCheck = "检测已取消，原配置未更改", searchCheckPassed = null) }
+                mutable.update { it.copy(searchCheck = "Check canceled; the previous configuration was preserved.", searchCheckPassed = null) }
             } catch (error: Exception) {
                 val message = validationMessage(error)
                 mutable.update { it.copy(searchCheck = message, searchCheckPassed = false) }
@@ -223,18 +223,18 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
                         target.finishWrite(output)
                     } catch (error: Exception) { target.failWrite(output); throw error }
                 }
-                var message = "显示设置已保存，下次识屏使用新布局"
+                var message = "Display settings saved. The new layout will be used on the next screen analysis."
                 if (state.value.service == RootServiceStarter.State.RUNNING) {
                     val refreshed = withContext(Dispatchers.IO) {
                         try { RootServiceStarter.refreshOverlay(apk); true } catch (_: Exception) { false }
                     }
-                    message = if (refreshed) "显示设置已保存，后续答案使用新布局"
-                        else "显示设置已保存；未确认当前答案刷新，下次识屏时生效"
+                    message = if (refreshed) "Display settings saved. Future answers will use the new layout."
+                        else "Display settings saved; refreshing the current answer could not be confirmed. The layout will apply on the next analysis."
                 }
                 mutable.update { it.copy(overlay = config, showAdjustment = false) }
                 notices.send(UiNotice(message))
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { notices.send(UiNotice("显示设置保存失败，请重试")) }
+            catch (_: Exception) { notices.send(UiNotice("Failed to save display settings. Please try again.")) }
             finally { mutable.update { it.copy(overlaySaving = false) } }
         }
     }
@@ -253,12 +253,12 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
                     checks.saveModel(call, config, search.enabled, configFile)
                 }
                 savedForm = form
-                val message = result + "，已保存"
+                val message = result + "; saved"
                 mutable.update { it.copy(dirty = it.form != form, modelCheck = message, modelCheckPassed = true) }
                 notices.send(UiNotice(message, saved = true))
             } catch (cancelled: CancellationException) {
                 if (!kotlin.coroutines.coroutineContext.isActive) throw cancelled
-                mutable.update { it.copy(modelCheck = "检测已取消，原配置未更改", modelCheckPassed = null) }
+                mutable.update { it.copy(modelCheck = "Check canceled; the previous configuration was preserved.", modelCheckPassed = null) }
             }
             catch (error: Exception) {
                 val message = validationMessage(error)
@@ -271,9 +271,9 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
         }
     }
     private fun validationMessage(error: Exception) = when (error) {
-        is PrivateSettings.SaveNotConfirmed -> error.message ?: "未能确认配置保存，请重试"
-        is ApiConfig.Invalid, is SearchConfig.Invalid, is LlmCall.Failure -> (error.message ?: "检测失败") + "；原配置未更改"
-        else -> "检测或保存失败，请检查配置与网络后重试；原配置未更改"
+        is PrivateSettings.SaveNotConfirmed -> error.message ?: "Could not confirm that settings were saved. Please try again."
+        is ApiConfig.Invalid, is SearchConfig.Invalid, is LlmCall.Failure -> (error.message ?: "Check failed") + "; the previous configuration was preserved"
+        else -> "Check or save failed. Check the configuration and network, then try again; the previous configuration was preserved"
     }
     override fun onCleared() { validationCall?.cancel(); super.onCleared() }
 
@@ -300,7 +300,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
         when (state.value.service) {
             RootServiceStarter.State.RUNNING -> operate(Operation.STOP) { ServiceController.stop(backend) }
             RootServiceStarter.State.STOPPED -> operate(Operation.START) {
-                if (state.value.dirty) throw ApiConfig.Invalid("请先保存当前接口配置")
+                if (state.value.dirty) throw ApiConfig.Invalid("Save the current API configuration first")
                 ApiConfig.read(configFile)
                 ServiceController.start(backend, digest)
             }
@@ -321,7 +321,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
                     applySnapshot(current)
                     if (state.value.hookCurrent) break
                 }
-                notices.send(UiNotice(if (state.value.hookCurrent) "系统界面已加载当前版本模块" else "已发送重启请求；若仍未加载，请确认 LSPosed 作用域后重新检查"))
+                notices.send(UiNotice(if (state.value.hookCurrent) "SystemUI loaded the current module version" else "Restart requested; if it is still not loaded, verify the LSPosed scope and check again"))
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) { recover(error) }
             finally { lastControlFinished = SystemClock.elapsedRealtime(); mutable.update { it.copy(operation = Operation.NONE) } }
@@ -336,7 +336,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
             try {
                 val actual = withContext(Dispatchers.IO) { work() }
                 applySnapshot(actual)
-                if (state.value.operation == Operation.UPDATE) notices.send(UiNotice("Root 服务已更新到当前版本"))
+                if (state.value.operation == Operation.UPDATE) notices.send(UiNotice("Root service updated to the current version"))
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) { recover(error) }
             finally { lastControlFinished = SystemClock.elapsedRealtime(); mutable.update { it.copy(operation = Operation.NONE) } }
@@ -356,7 +356,7 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
         // A denied read must not immediately ask for root a second time. Re-read only after a mutation.
         val mutated = state.value.operation in setOf(Operation.START, Operation.STOP, Operation.UPDATE, Operation.RESTART, Operation.ADJUST)
         if (error is ApiConfig.Invalid) {
-            val message = error.message ?: "请先保存接口配置"
+            val message = error.message ?: "Save the API configuration first"
             mutable.update { it.copy(error = message) }
             notices.send(UiNotice(message))
             return
@@ -365,8 +365,8 @@ internal class MainViewModel(application: Application) : AndroidViewModel(applic
         if (actual != null) applySnapshot(actual)
         else mutable.update { it.copy(snapshot = null, root = RootAccess.UNAVAILABLE, hookCurrent = false, serviceCurrent = false) }
         val message = when (error) {
-            is ApiConfig.Invalid, is IOException -> error.message ?: "操作失败，请重试"
-            else -> "自检失败，请确认 Root 授权后重新检查"
+            is ApiConfig.Invalid, is IOException -> error.message ?: "Operation failed. Please try again."
+            else -> "Status check failed. Confirm Root authorization and check again."
         }
         mutable.update { it.copy(error = message) }
         notices.send(UiNotice(message))

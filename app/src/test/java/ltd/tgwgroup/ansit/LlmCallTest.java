@@ -21,12 +21,12 @@ public class LlmCallTest {
     }
     @Test public void eachImageIsAnIndependentConversation() throws Exception {
         try(MockWebServer server=new MockWebServer()) {
-            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"独立答案1\"}}]}"));
-            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"独立答案2\"}}]}"));
+            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"Independent answer 1\"}}]}"));
+            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"Independent answer 2\"}}]}"));
             server.start();
             ApiConfig config=new ApiConfig(server.url("/v1").toString(),KEY,"my-vision-model");
-            assertEquals("独立答案1",new LlmCall().answerImage(config,"first-frame"));
-            assertEquals("独立答案2",new LlmCall().answerImage(config,"second-frame"));
+            assertEquals("Independent answer 1",new LlmCall().answerImage(config,"first-frame"));
+            assertEquals("Independent answer 2",new LlmCall().answerImage(config,"second-frame"));
             for(int i=0;i<2;i++) {
                 RecordedRequest recorded=server.takeRequest(2,TimeUnit.SECONDS); assertNotNull(recorded);
                 assertEquals("POST",recorded.getMethod());assertEquals("/v1/chat/completions",recorded.getPath());
@@ -39,7 +39,7 @@ public class LlmCallTest {
                 String image=request.getJSONArray("messages").getJSONObject(1).getJSONArray("content").getJSONObject(1).getJSONObject("image_url").getString("url");
                 assertEquals("data:image/png;base64,"+(i==0?"first-frame":"second-frame"),image);
                 assertFalse(request.has("conversation"));assertFalse(request.has("previous_response_id"));
-                assertFalse(request.toString().contains("独立答案"));
+                assertFalse(request.toString().contains("Independent answer"));
             }
         }
     }

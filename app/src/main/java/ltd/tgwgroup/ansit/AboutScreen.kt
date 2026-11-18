@@ -66,9 +66,9 @@ internal fun AboutScreen(onBack: () -> Unit, onOpenLink: ((String) -> Unit)? = n
     }
     BackHandler(onBack = onBack)
     Scaffold(topBar = {
-        TopAppBar(title = { Text("关于 AnsIt") }, navigationIcon = {
+        TopAppBar(title = { Text("About AnsIt") }, navigationIcon = {
             IconButton(onClick = onBack, modifier = Modifier.testTag("about_back")) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回设置")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to settings")
             }
         })
     }) { insets ->
@@ -77,49 +77,49 @@ internal fun AboutScreen(onBack: () -> Unit, onOpenLink: ((String) -> Unit)? = n
                 .padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 Column(Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Image(painterResource(R.drawable.ic_launcher_flat), "AnsIt 图标", modifier = Modifier.size(88.dp))
+                    Image(painterResource(R.drawable.ic_launcher_flat), "AnsIt icon", modifier = Modifier.size(88.dp))
                     Text("AnsIt", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
-                    Text("屏幕里的问题，随时解答", style = MaterialTheme.typography.bodyLarge,
+                    Text("Questions on screen, answered anytime", style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-                        Text("版本 " + BuildConfig.VERSION_NAME, Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                        Text("Version " + BuildConfig.VERSION_NAME, Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelLarge)
                     }
                 }
                 Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text("开发者", style = MaterialTheme.typography.titleMedium)
+                        Text("Developer", style = MaterialTheme.typography.titleMedium)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(painterResource(R.drawable.github_avatar), "AntiOblivionis 的 GitHub 头像",
+                            Image(painterResource(R.drawable.github_avatar), "AntiOblivionis's GitHub avatar",
                                 modifier = Modifier.size(64.dp).clip(CircleShape), contentScale = ContentScale.Crop)
                             Spacer(Modifier.width(16.dp))
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text(AboutLinks.AUTHOR, style = MaterialTheme.typography.titleLarge, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                                Text("保持思考，无限进步。", style = MaterialTheme.typography.bodyMedium,
+                                Text("Keep thinking. Keep improving.", style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
-                        AboutLink("个人主页", "id.tgwgroup.ltd", "about_home", { open(AboutLinks.HOME) })
+                        AboutLink("Personal homepage", "id.tgwgroup.ltd", "about_home", { open(AboutLinks.HOME) })
                         AboutLink("GitHub", "github.com/AntiOblivionis", "about_github", { open(AboutLinks.GITHUB) })
                     }
                 }
                 Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text("项目", style = MaterialTheme.typography.titleMedium)
-                        AboutLink("官方网站", "ansit.tgwgroup.ltd", "about_website", { open(AboutLinks.WEBSITE) })
+                        Text("Project", style = MaterialTheme.typography.titleMedium)
+                        AboutLink("Official website", "ansit.tgwgroup.ltd", "about_website", { open(AboutLinks.WEBSITE) })
                         HorizontalDivider()
-                        AboutLink("代码仓库", "AntiOblivionis/AnsIt", "about_repository", { open(AboutLinks.REPOSITORY) })
+                        AboutLink("Source repository", "AntiOblivionis/AnsIt", "about_repository", { open(AboutLinks.REPOSITORY) })
                     }
                 }
-                Text("基于 Root 与 LSPosed，在系统界面识别电池区域长按。截图仅发送到你配置的模型接口；每次识屏都是独立会话。",
+                Text("Uses Root and LSPosed to detect battery-area long presses in SystemUI. Screenshots are sent only to your configured model endpoint; each analysis is independent.",
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(4.dp))
             }
         }
     }
     if (failedLink) AlertDialog(onDismissRequest = { failedLink = false },
-        title = { Text("暂时无法打开链接") }, text = { Text("请检查设备是否安装了可打开 HTTPS 链接的浏览器。") },
-        confirmButton = { TextButton(onClick = { failedLink = false }) { Text("知道了") } })
+        title = { Text("Could not open link") }, text = { Text("Check that a browser capable of opening HTTPS links is installed on the device.") },
+        confirmButton = { TextButton(onClick = { failedLink = false }) { Text("OK") } })
 }
 
 @Composable

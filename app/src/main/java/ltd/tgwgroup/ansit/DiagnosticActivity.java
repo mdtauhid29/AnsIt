@@ -129,7 +129,7 @@ public final class DiagnosticActivity extends Activity {
             c.drawText("AnsIt SECURE fixture phase="+phase, 24, 160, paint);
             c.drawText("captureCallbacks="+captures+" touches="+touches,24,220,paint);
             c.drawText("obscuredTouches="+obscured,24,280,paint);
-            c.drawText("底图必须完整；答案区域可直接触摸",24,340,paint);
+            c.drawText("The base image must remain complete; the answer area is directly touchable",24,340,paint);
         }
         @Override public boolean onTouchEvent(MotionEvent e) {
             if (e.getActionMasked() == MotionEvent.ACTION_UP) {

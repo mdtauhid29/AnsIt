@@ -13,40 +13,40 @@ public class LlmConversationTest {
     private static final String KEY = "test-only-credential";
     private static List<JSONObject> history() throws Exception {
         List<JSONObject> history = new ArrayList<>();
-        history.add(LlmCall.imageMessage("previous-image", "上一题"));
-        history.add(LlmCall.assistantMessage("上一题答案"));
+        history.add(LlmCall.imageMessage("previous-image", "Previous question"));
+        history.add(LlmCall.assistantMessage("Previous answer"));
         return history;
     }
     @Test public void continuousTurnCarriesPriorScreenshotsAndAnswers() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
-            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"下一题答案\"}}]}"));
+            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"Next answer\"}}]}"));
             server.start();
             ApiConfig config = new ApiConfig(server.url("/v1").toString(), KEY, "vision");
-            assertEquals("下一题答案", new LlmCall().answerImage(config, "current-image", null, history()));
+            assertEquals("Next answer", new LlmCall().answerImage(config, "current-image", null, history()));
             JSONObject request = new JSONObject(server.takeRequest().getBody().readUtf8());
             JSONArray messages = request.getJSONArray("messages");
             assertEquals(4, messages.length());
             assertEquals("system", messages.getJSONObject(0).getString("role"));
-            assertTrue(messages.getJSONObject(0).getString("content").contains("连续答题会话"));
+            assertTrue(messages.getJSONObject(0).getString("content").contains("continuous answering session"));
             assertEquals("user", messages.getJSONObject(1).getString("role"));
-            assertEquals("上一题答案", messages.getJSONObject(2).getString("content"));
+            assertEquals("Previous answer", messages.getJSONObject(2).getString("content"));
             assertEquals("user", messages.getJSONObject(3).getString("role"));
             String image = messages.getJSONObject(3).getJSONArray("content").getJSONObject(1)
                 .getJSONObject("image_url").getString("url");
             assertEquals("data:image/png;base64,current-image", image);
             assertTrue(messages.getJSONObject(3).getJSONArray("content").getJSONObject(0)
-                .getString("text").contains("下一题"));
+                .getString("text").contains("next question"));
         }
     }
     @Test public void emptyHistoryKeepsTheIndependentConversationShape() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
-            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"新答案\"}}]}"));
+            server.enqueue(new MockResponse().setBody("{\"choices\":[{\"message\":{\"content\":\"New answer\"}}]}"));
             server.start();
             ApiConfig config = new ApiConfig(server.url("/v1").toString(), KEY, "vision");
-            assertEquals("新答案", new LlmCall().answerImage(config, "frame", null, java.util.Collections.emptyList()));
+            assertEquals("New answer", new LlmCall().answerImage(config, "frame", null, java.util.Collections.emptyList()));
             JSONArray messages = new JSONObject(server.takeRequest().getBody().readUtf8()).getJSONArray("messages");
             assertEquals(2, messages.length());
-            assertFalse(messages.getJSONObject(0).getString("content").contains("连续答题会话"));
+            assertFalse(messages.getJSONObject(0).getString("content").contains("continuous answering session"));
         }
     }
     @Test public void providerContextLimitBecomesContextFull() throws Exception {
@@ -57,7 +57,7 @@ public class LlmConversationTest {
             ApiConfig config = new ApiConfig(server.url("/v1").toString(), KEY, "vision");
             LlmCall.ContextFull full = assertThrows(LlmCall.ContextFull.class,
                 () -> new LlmCall().answerImage(config, "current", null, history()));
-            assertEquals("上下文已满", full.getMessage());
+            assertEquals("Context limit reached", full.getMessage());
         }
     }
     @Test public void payloadTooLargeAlsoBecomesContextFull() throws Exception {

@@ -8,7 +8,7 @@ final class TriggerConfig {
     static final int DEFAULT_MS = 650, MIN_MS = 200, MAX_MS = 3000;
     final int holdMillis;
     final boolean swapTaps;
-    static final class Invalid extends Exception { Invalid() { super("触发阈值须为 200–3000 的整数毫秒"); } }
+    static final class Invalid extends Exception { Invalid() { super("Trigger threshold must be an integer from 200 to 3000 milliseconds"); } }
     TriggerConfig(int holdMillis) throws Invalid { this(holdMillis, false); }
     TriggerConfig(int holdMillis, boolean swapTaps) throws Invalid {
         if (holdMillis < MIN_MS || holdMillis > MAX_MS) throw new Invalid();

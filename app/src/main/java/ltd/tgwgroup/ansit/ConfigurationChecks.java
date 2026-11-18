@@ -33,16 +33,16 @@ final class ConfigurationChecks {
 
     String model(LlmCall call, ApiConfig config, boolean tools) throws Exception {
         call.verifyModel(config, probes.create(), tools);
-        return tools ? "图片输入与工具调用检测通过" : "图片输入检测通过";
+        return tools ? "Image input and tool calling verified" : "Image input verified";
     }
     String search(LlmCall call, SearchConfig search, ApiConfig savedModel) throws Exception {
-        if (!search.enabled) return "搜索已关闭（未发起网络检测）";
-        int count = new DeepSeekSearch(call, search.key, searchEndpoint).search("DeepSeek 官方 API 文档", 1).getJSONArray("results").length();
-        String result = count > 0 ? "搜索接口检测通过" : "搜索接口响应正常（测试查询暂无匹配结果）";
+        if (!search.enabled) return "Search disabled (no network check performed)";
+        int count = new DeepSeekSearch(call, search.key, searchEndpoint).search("DeepSeek official API documentation", 1).getJSONArray("results").length();
+        String result = count > 0 ? "Search endpoint verified" : "Search endpoint responded normally (the test query had no matches)";
         if (search.enabled && savedModel != null) {
             call.verifyModel(savedModel, probes.create(), true);
-            result += "，主模型图片与工具调用检测通过";
-        } else if (search.enabled) result += "；请再检测保存模型配置以确认工具能力";
+            result += "; main model image input and tool calling verified";
+        } else if (search.enabled) result += "; save and verify the model configuration again to confirm tool support";
         return result;
     }
 }

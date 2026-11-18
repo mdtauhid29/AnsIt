@@ -10,7 +10,7 @@ import android.text.TextUtils;
 
 /** The preview and real root surface use the same text fitting, padding and background alpha. */
 final class AnswerPainter {
-    static final String SAMPLE = "答案预览\n\n这里会显示本次识屏的解答。\n\n拖动框体改变位置，拖动四角改变大小。背景透明度可以在下方调整。\n\n设置会保留，下次解答使用你保存的布局。";
+    static final String SAMPLE = "Answer preview\n\nThe answer to this screen capture will appear here.\n\nDrag the frame to move it or drag its corners to resize it. Adjust background transparency below.\n\nSettings are preserved and the saved layout will be used for future answers.";
 
     static void draw(Canvas canvas, String text, int width, int height, int screenWidth, int screenHeight, OverlayConfig config) {
         float scale = Math.min(screenWidth, screenHeight) / 1200f;
@@ -19,7 +19,7 @@ final class AnswerPainter {
         int textHeight = Math.max(1, (int)(height - paddingY * 2));
         TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTypeface(Typeface.DEFAULT); textPaint.setColor(Color.WHITE);
-        String display = text.length() > 12000 ? text.substring(0, 12000) + "…（答案过长）" : text;
+        String display = text.length() > 12000 ? text.substring(0, 12000) + "… (answer truncated)" : text;
         StaticLayout layout = null;
         for (int size = 40; size >= 28; size -= 2) {
             textPaint.setTextSize(size * scale);

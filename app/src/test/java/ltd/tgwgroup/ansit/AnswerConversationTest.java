@@ -8,14 +8,14 @@ import static org.junit.Assert.*;
 public class AnswerConversationTest {
     @Test public void successfulTurnsAppendOnlyScreenshotAndFinalAnswer() throws Exception {
         AnswerConversation conversation = new AnswerConversation();
-        conversation.append("image-one", "答案一");
-        conversation.append("image-two", "答案二");
+        conversation.append("image-one", "Answer 1");
+        conversation.append("image-two", "Answer 2");
         assertEquals(2, conversation.turns());
         List<JSONObject> messages = conversation.snapshot();
         assertEquals(4, messages.size());
         assertEquals("user", messages.get(0).getString("role"));
         assertEquals("assistant", messages.get(1).getString("role"));
-        assertEquals("答案一", messages.get(1).getString("content"));
+        assertEquals("Answer 1", messages.get(1).getString("content"));
         assertEquals("user", messages.get(2).getString("role"));
         assertFalse(messages.toString().contains("tool_calls"));
     }

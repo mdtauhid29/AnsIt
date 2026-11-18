@@ -78,7 +78,7 @@ class OverlayEditorTest {
         compose.setContent { AnsItTheme { OverlayEditor(OverlayConfig.defaults(),
             onSave = { saves++; saved = it }, onCancel = { cancelled++ }) } }
         compose.onNodeWithTag("transparency_slider").performSemanticsAction(SemanticsActions.SetProgress) { it(100f) }
-        compose.onNodeWithContentDescription("取消调整").performClick()
+        compose.onNodeWithContentDescription("Cancel adjustment").performClick()
         compose.runOnIdle { assertEquals(1, cancelled); assertEquals(0, saves) }
         compose.onNodeWithTag("reset_overlay").performClick()
         compose.onNodeWithTag("save_overlay").performClick()

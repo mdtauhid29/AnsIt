@@ -13,7 +13,7 @@ final class AnswerConversation {
     // context limit is the primary "full" signal and is reported the same way.
     static final int MAX_TURNS = 32;
     static final long MAX_CHARS = 20L * 1024 * 1024;
-    static final String HISTORY_PROMPT = "请解答当前截图中的主要问题，直接给出答案和必要说明。";
+    static final String HISTORY_PROMPT = "Solve the main problem in the current screenshot and provide the answer with necessary explanation.";
     private final List<JSONObject> messages = new ArrayList<>();
     private int turns;
     private long chars;

@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 final class PrivateSettings {
     static final class SaveNotConfirmed extends IOException {
-        SaveNotConfirmed() { super("未能确认配置已保存，请重试"); }
+        SaveNotConfirmed() { super("Could not confirm that the settings were saved. Please try again."); }
     }
     static JSONObject read(File file, int maxBytes) throws Exception {
         // Open the published file only; never delete a different process's live AtomicFile .new.
