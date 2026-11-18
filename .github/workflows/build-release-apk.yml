@@ -30,6 +30,7 @@ jobs:
           gradle-version: '8.11.1'
 
       - name: Configure release signing
+        id: signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
@@ -37,10 +38,12 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          test -n "$KEYSTORE_BASE64"
-          test -n "$KEYSTORE_PASSWORD"
-          test -n "$KEY_ALIAS"
-          test -n "$KEY_PASSWORD"
+          if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
+            echo "RELEASE_SIGNING_AVAILABLE=false" >> "$GITHUB_ENV"
+            echo "Release signing secrets are not configured; building an unsigned debug APK." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "RELEASE_SIGNING_AVAILABLE=true" >> "$GITHUB_ENV"
           keystore_path="$RUNNER_TEMP/ansit-release.keystore"
           signing_path="$RUNNER_TEMP/ansit-signing.properties"
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore_path"
@@ -54,12 +57,27 @@ jobs:
           chmod 600 "$keystore_path" "$signing_path"
           echo "ANDROID_RELEASE_SIGNING_PROPERTIES=$signing_path" >> "$GITHUB_ENV"
 
-      - name: Build release APK
-        run: gradle --no-daemon assembleRelease
+      - name: Build APK
+        run: |
+          set -euo pipefail
+          if [[ "$RELEASE_SIGNING_AVAILABLE" == "true" ]]; then
+            gradle --no-daemon assembleRelease
+          else
+            gradle --no-daemon assembleDebug
+          fi
 
-      - name: Upload release APK
+      - name: Upload signed release APK
+        if: env.RELEASE_SIGNING_AVAILABLE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ansit-release-apk
           path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Upload debug fallback APK
+        if: env.RELEASE_SIGNING_AVAILABLE == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansit-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
