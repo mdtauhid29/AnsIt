@@ -4,136 +4,136 @@
 
 <h1 align="center">AnsIt</h1>
 
-<p align="center"><strong>更安全的Android AI答题助手</strong></p>
+<p align="center"><strong>A safer Android AI question-answering assistant</strong></p>
 
 <p align="center">
   <a href="https://ko-fi.com/J1F02AL174"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a>
 </p>
 
 <p align="center">
-  <a href="https://ansit.tgwgroup.ltd">官方网站</a> ·
-  <a href="https://ansit.tgwgroup.ltd/#download">下载安装</a> ·
-  <a href="#快速开始">使用教程</a> ·
+  <a href="https://ansit.tgwgroup.ltd">Official website</a> ·
+  <a href="https://ansit.tgwgroup.ltd/#download">Download</a> ·
+  <a href="#quick-start">Usage guide</a> ·
   <a href="https://github.com/AntiOblivionis/AnsIt">GitHub</a> ·
-  <a href="#支持项目">支持项目</a>
+  <a href="#support-the-project">Support the project</a>
 </p>
 
 <p align="center">Android 12+ · Root + LSPosed · MIT License</p>
 
-**长按状态栏，让 AI 看懂题目，直接在屏幕上给出解答。**
+**Long-press the status bar to let AI understand the question and provide the answer directly on screen.**
 
-AnsIt 把反检测放在设计的中心：从触发、识屏到答案显示，尽量减少目标应用可以感知的额外信号，让普通屏幕捕获保留完整底图。
+AnsIt puts anti-detection at the center of its design. It minimizes the extra signals that target apps can observe across triggering, screen recognition, and answer display, while preserving the original screen image for ordinary capture.
 
-## 反检测，贯穿一次答题
+## Anti-detection throughout the answering process
 
-- **触发留在系统界面。** 仅在 SystemUI 中识别长按，目标应用内不注入 AnsIt 的手势处理代码，也不新增全屏触摸窗口。
-- **识屏避开系统截图界面。** 通过 Root 捕获当前画面，日常使用不弹出截图工具，也不把截图写入相册。
-- **答案独立显示，捕获保留底图。** 答案图层排除标准屏幕捕获，避免将答案一起录入，也避免用纯色块遮盖原画面。在已验证环境中，答案显示与收起时，普通捕获保留的底图一致。
+- **Triggering remains in the system interface.** Long presses are recognized only in SystemUI. No AnsIt gesture handler is injected into the target app, and no additional full-screen touch window is added.
+- **Screen capture avoids the system screenshot interface.** The current screen is captured through Root. Normal use does not open the screenshot tool or save screenshots to the photo gallery.
+- **Answers are displayed independently while capture preserves the original image.** The answer layer is excluded from standard screen capture, preventing the answer from being recorded and avoiding an opaque block that could cover the original screen. In verified environments, the original image retained by ordinary capture is consistent before and after answers are shown or hidden.
 
-已有测试覆盖真实长按、截图与录屏事件观察、普通权限捕获和底图像素比对。[查看专项验证与适用范围 →](https://ansit.tgwgroup.ltd/evidence/)
+Real long-press, screenshot, and recording event observations, ordinary-permission capture, and original-image pixel comparison tests are available.[See dedicated verification and scope →](https://ansit.tgwgroup.ltd/evidence/)
 
-具体表现取决于系统、ROM 与应用的检测方式，请结合专项验证范围和设备实测使用。
+Actual behavior depends on the system, ROM, and detection methods used by each app. Refer to the verification scope and test your specific device.
 
-## 让答题更顺手
+## Make answering more convenient
 
-- **轻振提示，松手开始。** 长按达到判定时间后轻振提醒，松手进入连续答题；单击下一题（默认不保留上下文），双击下一题（默认保留上下文）；再次长按退出。可在设置中交换单击/双击。
-- **接入你选择的模型。** 支持 OpenAI 格式的视觉模型接口，自行填写地址、API Key 和模型名称。
-- **按需保留上下文。** 单击下一题开始新会话；双击下一题把本轮截图与答案带进同一会话；上下文满了会提示，单击可清除上下文，长按退出。
-- **需要时再搜索。** 可选接入 DeepSeek 网页搜索，由模型按需查询公开资料。
-- **贴合你的屏幕。** Material 3 莫奈配色，支持调整答案区域的位置、大小与透明度。
+- **Light vibration feedback; release to begin.** When the long press reaches the configured duration, AnsIt vibrates briefly. Releasing enters continuous answering mode. A single tap starts the next question with context cleared by default; a double tap starts the next question with context retained by default; another long press exits. Single-tap and double-tap behavior can be swapped in Settings.
+- **Use the model of your choice.** Connect an OpenAI-compatible vision model endpoint by entering the address, API key, and model name.
+- **Retain context when needed.** A single tap starts a new session for the next question. A double tap carries the current screenshot and answer into the same session for the next question. When context fills up, AnsIt shows a notification. A single tap clears context and continues, while a long press exits.
+- **Search only when necessary.** Optionally connect DeepSeek web search so the model can look up public information when needed.
+- **Adapt to your screen.** Material 3 Monet colors are supported, along with controls for answer-area position, size, and transparency.
 
-## 快速开始
+## Quick start
 
-### 1. 准备设备
+### 1. Prepare the device
 
-- Android **12 或更高版本**。
-- 已获取 **Root** 权限。
-- 已安装并能够正常使用 **LSPosed**。
-- 准备支持图片输入的模型接口与 API Key。
+- Android **12 or later**.
+- **Root** access.
+- A working **LSPosed** installation.
+- A model endpoint with image input support and an API key.
 
-触发采用 Android 通用状态栏入口，不依赖小米专有类。不同 ROM 的系统接口仍有差异，安装成功不代表设备已经完整适配。
+Triggering uses Android's common status-bar entry points and does not depend on Xiaomi-specific classes. Different ROMs still expose different system interfaces, so a successful installation does not guarantee complete compatibility with every device.
 
-### 2. 安装与激活
+### 2. Install and activate
 
-1. 从[官网下载安装包](https://ansit.tgwgroup.ltd/#download)，安装并打开 AnsIt。
-2. 按应用内引导允许 Root 权限。
-3. 在 **LSPosed → 模块 → AnsIt** 中启用模块。
-4. 作用域仅勾选 **系统界面（com.android.systemui）**。
-5. 返回 AnsIt，通过引导中的入口**重启 SystemUI**，等待状态栏恢复。
+1. [Download the APK](https://ansit.tgwgroup.ltd/#download) from the official website and install and open AnsIt.
+2. Follow the in-app instructions and grant Root permission.
+3. In **LSPosed → Modules → AnsIt**, enable the module.
+4. Select only **SystemUI (com.android.systemui)** as the scope.
+5. Return to AnsIt and use the setup guide to **restart SystemUI**, then wait for the status bar to recover.
 
-### 3. 连接模型
+### 3. Connect a model
 
-在「模型配置」中填写：
+In **Model Configuration**, enter:
 
-| 配置项 | 填写内容 |
+| Setting | Value |
 | --- | --- |
-| 接口地址 | 服务商提供的 OpenAI 兼容地址，支持根地址、`/v1` 或完整的 `/chat/completions` 地址 |
-| API Key | 对应服务商的 API Key |
-| 模型名称 | 服务商提供的、支持图片输入的模型 ID |
+| API endpoint | A service-provider OpenAI-compatible address. Base URLs, `/v1` URLs, and complete `/chat/completions` URLs are supported. |
+| API key | The API key issued by the service provider. |
+| Model name | The model ID provided by the service provider; it must support image input. |
 
-点击 **「检测并保存」**，检测通过后即可使用。纯文本模型无法完成识屏解答。
+Tap **“Check and Save”**. Once the check passes, you can begin.
 
-检测会发送测试图片，并产生真实 API 请求；费用按你所用服务商的规则计算。
+The check sends a test image and makes a real API request. Any charges are determined by the rules of the provider you use.
 
-### 4. 开始答题
+### 4. Begin answering
 
-1. 在 AnsIt 中点击 **「开始」**，等待服务就绪。
-2. 打开要提问的画面，**长按状态栏电池附近**。
-3. 感到轻振后松手，进入连续答题并等待屏幕上出现解答。
-4. **单击电池**：下一题，不保留上下文；**双击电池**：下一题，保留上下文。
-5. 再次长按同一区域退出连续答题。上下文满后，单击可清除上下文并继续，长按退出。
+1. Tap **“Start”** in AnsIt and wait until the service is ready.
+2. Open the screen you want to analyze and **long-press near the battery icon in the status bar**.
+3. When you feel a vibration, release to enter continuous answering mode and wait for the answer to appear.
+4. **Single-tap the battery**: next question without retaining context. **Double-tap the battery**: next question while retaining context.
+5. Long-press the same area again to exit continuous answering. If context is full, a single tap clears context and continues, and a long press exits before you can start again.
 
-电池布局无法识别时，**长按状态栏最右侧**。没有振动马达的设备，可按住至设置的长按时间后松手。
+If the battery layout cannot be detected, **long-press the far right of the status bar**. If the device has no vibration motor, hold for the configured long-press duration and then release.
 
-使用结束后，在应用内点击 **「停止」**。关闭设置页面不会停止已启动的服务。
+When finished, tap **“Stop”** in the app. Closing the settings page does not stop a running service.
 
-### 可选：启用网页搜索
+### Optional: Enable web search
 
-在「DeepSeek 网页搜索」中填写 DeepSeek 平台 API Key，打开 **「允许 AI 按需搜索」**，再点击 **「检测并保存」**。
+In **DeepSeek Web Search**, enter your DeepSeek platform API key, enable **“Allow AI to search when needed”**, and tap **“Check and Save”**.
 
-启用搜索时，主模型需要同时支持图片输入和工具调用。按界面提示完成检测后，模型会在需要资料时搜索，也可以直接回答。关闭搜索会保留 Key，方便下次启用。
+When search is enabled, the main model must support both image input and tool calls. After the check passes as described in the interface, the model will search when needed or answer directly when appropriate. Disabling search preserves the key for later use.
 
-## 常见问题
+## FAQ
 
-**按住电池没有反应？**
+**Holding the battery has no effect?**
 
-先确认服务已经开始、LSPosed 模块已启用且作用域正确，再重启一次 SystemUI。特殊电池布局可尝试长按状态栏最右侧。锁屏、服务停止或状态无法确认时不会触发；全屏隐藏状态栏时，需要先调出状态栏。
+Confirm that the service is running, the LSPosed module is enabled, and the scope is correct, then restart SystemUI once. If the battery layout is unusual, try long-pressing the far right of the status bar. Triggering is disabled on the lock screen and when the service is stopped or ready state cannot be confirmed. If the status bar is hidden in fullscreen mode, bring it out first.
 
-**单击/双击没有反应？**
+**Single-tap or double-tap has no effect?**
 
-当前题目还在请求中时，单击/双击会被忽略，等答案出现后再试。上下文已满时双击只会提示，单击可清除上下文继续，长按退出后也可以重新开始。
+When the current question is still being processed, single-tap and double-tap actions are ignored. Try again after the answer appears. When context is full, double-tap only shows a notification. A single tap clears context and continues, while a long press exits and allows restarting the session.
 
-**同包名安装更新后需要做什么？**
+**What should I do after updating by installing an APK with the same package name?**
 
-打开 AnsIt，让应用检查 Root 服务与模块状态，然后重启一次 SystemUI，使新模块生效。仅覆盖 APK 不会替换已经加载到 SystemUI 中的旧代码。
+Open AnsIt and let the app check the Root service and module state, then restart SystemUI once so the new module is loaded. Overwriting the APK does not replace code already loaded into SystemUI.
 
-**截图会发送到哪里？**
+**Where are screenshots sent?**
 
-截图直接发送到你填写的模型接口，AnsIt 官网不参与中转。启用网页搜索时，搜索关键词会发送到 DeepSeek。API Key 保存在应用私有目录中，请使用可信的接口与设备环境。
+Screenshots are sent directly to the model endpoint you configured. The AnsIt website does not relay them. When web search is enabled, search keywords are sent to DeepSeek. API keys are stored in the app's private directory. Use trusted endpoints and a trusted device environment.
 
-**AI 的答案一定正确吗？**
+**Are AI answers always correct?**
 
-识屏清晰度、题目条件与模型能力都会影响答案，重要结果请自行核对。
+No. Screenshot quality, question conditions, and model capability all affect the answer. Verify important results independently.
 
-更多说明见[使用指南](https://ansit.tgwgroup.ltd/guide/)与[数据说明](https://ansit.tgwgroup.ltd/privacy/)。
+More details are available in the [User Guide](https://ansit.tgwgroup.ltd/guide/) and [Privacy Information](https://ansit.tgwgroup.ltd/privacy/).
 
-## 作者与反馈
+## Author and feedback
 
-由 **[AntiOblivionis](https://github.com/AntiOblivionis)** 开发。
+Developed by **[AntiOblivionis](https://github.com/AntiOblivionis)**.
 
-- 个人主页：[id.tgwgroup.ltd](https://id.tgwgroup.ltd)
-- 项目官网：[ansit.tgwgroup.ltd](https://ansit.tgwgroup.ltd)
-- 问题反馈：[GitHub Issues](https://github.com/AntiOblivionis/AnsIt/issues)
-- 邮箱：[antioblivionis@gmail.com](mailto:antioblivionis@gmail.com)
+- Personal homepage: [id.tgwgroup.ltd](https://id.tgwgroup.ltd)
+- Project website: [ansit.tgwgroup.ltd](https://ansit.tgwgroup.ltd)
+- Feedback: [GitHub Issues](https://github.com/AntiOblivionis/AnsIt/issues)
+- Email: [antioblivionis@gmail.com](mailto:antioblivionis@gmail.com)
 
-欢迎提交设备兼容性反馈、改进建议与 Pull Request。反馈问题时，请说明应用版本、Android / ROM 版本与复现步骤，并隐去截图、日志中的个人信息及 API Key。
+Device compatibility reports, improvement suggestions, and pull requests are welcome. When reporting a problem, include the app version, Android/ROM version, and reproduction steps. Remove personal information and API keys from screenshots and logs.
 
-## 支持项目
+## Support the project
 
-如果 AnsIt 对你有帮助，欢迎自愿[打赏支持作者](https://tgwgroup.ltd/2025/10/19/support-me/)，感谢你的支持！
+If AnsIt is useful to you, voluntary support is welcome through [Ko-fi](https://ko-fi.com/J1F02AL174). Thank you!
 
-## 开源协议
+## Open-source license
 
-本项目采用 **[MIT License](LICENSE)**，允许使用、修改与分发，请保留版权及许可声明。第三方组件遵循各自的许可证。
+This project uses the [MIT License](LICENSE), which permits use, modification, and distribution while requiring the copyright and license notice to be preserved. Third-party components follow their respective licenses.
 
 Copyright © 2026 AntiOblivionis.
