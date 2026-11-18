@@ -12,7 +12,7 @@ final class SearchConfig {
     SearchConfig(boolean enabled, String key) throws Invalid {
         this.key = key.trim(); this.enabled = enabled;
         if ((enabled && this.key.isEmpty()) || this.key.length() > 4096 || this.key.chars().anyMatch(Character::isISOControl))
-            throw new Invalid("请填写有效的 DeepSeek API Key");
+            throw new Invalid("Enter a valid DeepSeek API key");
     }
     static SearchConfig disabled() {
         try { return new SearchConfig(false, ""); } catch (Invalid impossible) { throw new AssertionError(impossible); }

@@ -84,12 +84,12 @@ internal fun OverlayEditor(
     Scaffold(
         modifier = Modifier.testTag("overlay_editor"),
         topBar = {
-            TopAppBar(title = { Text("调整模式") }, navigationIcon = {
-                IconButton(onClick = onCancel, enabled = !saving) { Icon(Icons.Default.Close, "取消调整") }
+            TopAppBar(title = { Text("Adjustment Mode") }, navigationIcon = {
+                IconButton(onClick = onCancel, enabled = !saving) { Icon(Icons.Default.Close, "Cancel adjustment") }
             }, actions = {
                 TextButton(onClick = { onSave(draft) }, enabled = !saving, modifier = Modifier.testTag("save_overlay")) {
                     if (saving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                    else Text("保存")
+                    else Text("Save")
                 }
             })
         },
@@ -99,26 +99,26 @@ internal fun OverlayEditor(
                 Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 24.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("背景透明度", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                        Text("Background Transparency", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
                         Text((draft.transparency * 100).roundToInt().toString() + "%",
                             style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
                     Slider(value = draft.transparency * 100, onValueChange = { draft = draft.withTransparency(it / 100) },
                         enabled = !saving, valueRange = 0f..100f, steps = 99,
-                        modifier = Modifier.testTag("transparency_slider").semantics { contentDescription = "背景透明度" })
+                        modifier = Modifier.testTag("transparency_slider").semantics { contentDescription = "Background transparency" })
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("宽 " + (draft.width * 100).roundToInt() + "% · 高 " + (draft.height * 100).roundToInt() + "%",
+                        Text("Width " + (draft.width * 100).roundToInt() + "% · Height " + (draft.height * 100).roundToInt() + "%",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f))
                         TextButton(onClick = { draft = OverlayConfig.defaults() }, enabled = !saving,
-                            modifier = Modifier.testTag("reset_overlay")) { Text("恢复默认") }
+                            modifier = Modifier.testTag("reset_overlay")) { Text("Reset") }
                     }
                 }
             }
         },
     ) { insets ->
         Column(Modifier.fillMaxSize().padding(insets), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("拖动框体移动 · 拖动四角缩放", style = MaterialTheme.typography.bodyMedium,
+            Text("Drag the frame to move it · Drag corners to resize", style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp))
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center) {
@@ -133,7 +133,7 @@ internal fun OverlayEditor(
                     modifier = Modifier.size(previewWidth, previewHeight).clip(RoundedCornerShape(16.dp))
                         .testTag("frame_preview"))
             }
-            Text("按当前屏幕比例预览，保存后用于实际答案框", style = MaterialTheme.typography.labelSmall,
+            Text("Preview uses the current screen proportions; saving applies it to the answer frame", style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(12.dp))
         }
     }
@@ -188,7 +188,7 @@ private fun FramePreview(config: OverlayConfig, onChange: (OverlayConfig) -> Uni
         val label = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = scheme.onSurfaceVariant.toArgb(); textSize = w * .052f
         }
-        drawContext.canvas.nativeCanvas.drawText("屏幕内容预览", w * .10f, h * .18f, label)
+        drawContext.canvas.nativeCanvas.drawText("Screen preview", w * .10f, h * .18f, label)
         val b = config.pixels(w.roundToInt().coerceAtLeast(1), h.roundToInt().coerceAtLeast(1))
         val native = drawContext.canvas.nativeCanvas
         val saved = native.save()

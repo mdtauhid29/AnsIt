@@ -403,7 +403,7 @@ public final class RootMain {
         if (keepContext && (conversation.full() || conversation.limitReached())) {
             conversation.markFull();
             try {
-                show("上下文已满", displayedOn.width, displayedOn.height);
+                show("Context limit reached", displayedOn.width, displayedOn.height);
                 System.out.println("CONTEXT_FULL " + modeToken);
             } catch (Exception drawing) { cancel(); }
             return true;
@@ -437,7 +437,7 @@ public final class RootMain {
                 List<JSONObject> history;
                 synchronized (RootMain.class) {
                     if (!active || generation.get() != request) return;
-                    show("正在解答…", bitmap.getWidth(), bitmap.getHeight());
+                    show("Solving…", bitmap.getWidth(), bitmap.getHeight());
                     history = keepContext ? conversation.snapshot() : Collections.emptyList();
                     System.out.println("REQUEST " + request + (keepContext ? " context" : " fresh"));
                 }
@@ -454,7 +454,7 @@ public final class RootMain {
                     if (active && generation.get() == request) {
                         conversation.markFull();
                         try {
-                            show("上下文已满", displayedOn.width, displayedOn.height);
+                            show("Context limit reached", displayedOn.width, displayedOn.height);
                             System.out.println("CONTEXT_FULL " + request);
                         } catch (Exception drawing) { cancel(); }
                     }
@@ -463,7 +463,7 @@ public final class RootMain {
             } catch (Throwable t) {
                 synchronized (RootMain.class) {
                     if (active && generation.get() == request) {
-                        String message = t instanceof ApiConfig.Invalid || t instanceof LlmCall.Failure ? t.getMessage() : "识屏或请求失败，请重试";
+                        String message = t instanceof ApiConfig.Invalid || t instanceof LlmCall.Failure ? t.getMessage() : "Screen analysis or request failed. Please try again.";
                         try { show(message, displayedOn.width, displayedOn.height); System.out.println("ERROR " + request); }
                         catch (Exception drawing) { cancel(); }
                     }

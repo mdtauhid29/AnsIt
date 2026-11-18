@@ -140,11 +140,11 @@ internal fun AnsItContent(
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text("AnsIt", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text("屏幕里的问题，随时解答", style = MaterialTheme.typography.bodyMedium,
+                        Text("Questions on screen, answered anytime", style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     IconButton(onClick = { showAbout = true }, modifier = Modifier.testTag("open_about")) {
-                        Icon(Icons.Default.Info, "关于 AnsIt")
+                        Icon(Icons.Default.Info, "About AnsIt")
                     }
                 }
 
@@ -154,14 +154,14 @@ internal fun AnsItContent(
                     Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainer) {
                         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
-                                Text(if (state.root != RootAccess.GRANTED) "完成首次设置" else "SystemUI 模块尚未就绪",
+                                Text(if (state.root != RootAccess.GRANTED) "Complete initial setup" else "SystemUI module is not ready",
                                     style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
-                                Text(if (state.snapshot?.hook == RootServiceStarter.Hook.LOADED) "模块版本有变化，请重启系统界面。"
-                                    else "授权 Root，并在 LSPosed 中启用系统界面作用域。",
+                                Text(if (state.snapshot?.hook == RootServiceStarter.Hook.LOADED) "The module version changed. Restart SystemUI."
+                                    else "Grant Root and enable the SystemUI scope in LSPosed.",
                                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            TextButton(onClick = onShowGuide) { Text("去设置") }
+                            TextButton(onClick = onShowGuide) { Text("Go to setup") }
                         }
                     }
                 }
@@ -171,19 +171,19 @@ internal fun AnsItContent(
                 SearchConfigurationCard(state, onSearchEdit, onSearchSave, onCancelValidation)
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("长按状态栏，连续答题", style = MaterialTheme.typography.titleMedium)
-                    Text("按住状态栏电池附近达到已保存阈值（" + state.triggerHoldMillis +
-                        " ms），感到轻振后松手即进入连续答题。单击电池：下一题（" +
-                        (if (state.triggerSavedSwap) "保留上下文" else "不保留上下文") + "）；双击电池：下一题（" +
-                        (if (state.triggerSavedSwap) "不保留上下文" else "保留上下文") + "）；再次长按退出。无法识别电池布局时，请长按状态栏右侧。",
+                    Text("Long-press the status bar for continuous answers", style = MaterialTheme.typography.titleMedium)
+                    Text("Hold near the status-bar battery until the saved threshold (" + state.triggerHoldMillis +
+                        " ms) is reached, feel the vibration, and release to start continuous answering. Single-tap the battery: next question (" +
+                        (if (state.triggerSavedSwap) "keep context" else "clear context") + "); double-tap: next question (" +
+                        (if (state.triggerSavedSwap) "clear context" else "keep context") + "); long-press again to exit. If the battery layout cannot be detected, long-press the far right of the status bar.",
                         style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("上下文满后会提示“上下文已满”，单击可清除上下文继续，长按退出。关闭应用后，已启动的服务仍会运行；重启手机后需重新开始。",
+                    Text("When context is full, AnsIt shows “Context limit reached.” Single-tap to clear context and continue, or long-press to exit. The service keeps running after the app closes; it must be restarted after reboot.",
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween) {
-                    TextButton(onClick = onShowGuide) { Text("使用引导") }
-                    TextButton(onClick = { showAbout = true }) { Text("关于 AnsIt · " + BuildConfig.VERSION_NAME) }
+                    TextButton(onClick = onShowGuide) { Text("Setup guide") }
+                    TextButton(onClick = { showAbout = true }) { Text("About AnsIt · " + BuildConfig.VERSION_NAME) }
                 }
             }
         }
@@ -197,10 +197,10 @@ internal fun AnsItContent(
     if (confirmRestart) {
         AlertDialog(
             onDismissRequest = { confirmRestart = false },
-            title = { Text("重启系统界面？") },
-            text = { Text("状态栏和导航栏会短暂消失，系统会重新启动 SystemUI。请先在 LSPosed 启用 AnsIt，并仅勾选“系统界面（com.android.systemui）”。") },
-            confirmButton = { TextButton(onClick = { confirmRestart = false; onRestart() }) { Text("重启") } },
-            dismissButton = { TextButton(onClick = { confirmRestart = false }) { Text("取消") } },
+            title = { Text("Restart SystemUI?") },
+            text = { Text("The status and navigation bars will briefly disappear while SystemUI restarts. Enable AnsIt in LSPosed first and select only “SystemUI (com.android.systemui).”") },
+            confirmButton = { TextButton(onClick = { confirmRestart = false; onRestart() }) { Text("Restart") } },
+            dismissButton = { TextButton(onClick = { confirmRestart = false }) { Text("Cancel") } },
         )
     }
 }
@@ -213,11 +213,11 @@ private fun TriggerSettingsCard(state: MainState, onEdit: (String) -> Unit, onSa
     val enabled = !state.triggerLoading && !state.triggerSaving
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("触发设置", style = MaterialTheme.typography.titleLarge)
-            Text("调整长按电池多久后进入连续答题。仅在服务运行且确认就绪时响应；停止后不接管长按。",
+            Text("Trigger Settings", style = MaterialTheme.typography.titleLarge)
+            Text("Adjust how long to hold the battery before starting continuous answering. It responds only while the service is running and ready; it does not handle holds while stopped.",
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             OutlinedTextField(state.triggerText, onEdit, enabled = enabled, singleLine = true,
-                label = { Text("触发阈值（毫秒）") }, supportingText = { Text("200–3000 ms，默认 650 ms") },
+                label = { Text("Trigger threshold (milliseconds)") }, supportingText = { Text("200–3000 ms; default 650 ms") },
                 isError = !valid, modifier = Modifier.fillMaxWidth().testTag("trigger_millis"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done))
             Slider(value = (millis ?: TriggerConfig.DEFAULT_MS).coerceIn(TriggerConfig.MIN_MS, TriggerConfig.MAX_MS).toFloat(),
@@ -226,26 +226,26 @@ private fun TriggerSettingsCard(state: MainState, onEdit: (String) -> Unit, onSa
                 modifier = Modifier.testTag("trigger_slider"))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("交换单击/双击", style = MaterialTheme.typography.bodyLarge)
-                    Text(if (state.triggerSwap) "单击保留上下文，双击清除上下文" else "单击清除上下文，双击保留上下文",
+                    Text("Swap single-tap and double-tap", style = MaterialTheme.typography.bodyLarge)
+                        Text(if (state.triggerSwap) "Single-tap keeps context; double-tap clears it" else "Single-tap clears context; double-tap keeps it",
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Switch(checked = state.triggerSwap, onCheckedChange = onSwap, enabled = enabled,
                     modifier = Modifier.testTag("swap_taps"))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (state.triggerDirty) "有未保存的更改" else "长按进入，再次长按退出",
+                Text(if (state.triggerDirty) "Unsaved changes" else "Long-press to enter; long-press again to exit",
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f))
                 TextButton(onClick = { onEdit(TriggerConfig.DEFAULT_MS.toString()) }, enabled = enabled,
-                    modifier = Modifier.testTag("reset_trigger")) { Text("恢复默认") }
+                    modifier = Modifier.testTag("reset_trigger")) { Text("Reset") }
             }
             FilledTonalButton(onClick = onSave, enabled = enabled && valid,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("save_trigger")) {
                 if (state.triggerSaving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 else Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(if (state.triggerSaving) "正在保存…" else "保存触发设置")
+                Text(if (state.triggerSaving) "Saving…" else "Save Trigger Settings")
             }
             state.triggerNote?.let { Text(it, style = MaterialTheme.typography.bodySmall,
                 color = if (state.triggerError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary) }
@@ -264,33 +264,33 @@ private fun ServiceCard(state: MainState, onToggle: () -> Unit, onCheck: () -> U
         Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("识屏服务", style = MaterialTheme.typography.labelLarge)
+                    Text("Screen Analysis Service", style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.height(6.dp))
                     Text(when (state.service) {
-                        RootServiceStarter.State.RUNNING -> "运行中"
-                        RootServiceStarter.State.STOPPED -> "已停止"
-                        RootServiceStarter.State.UNKNOWN -> if (state.root == RootAccess.UNAVAILABLE) "状态暂时不可用" else "准备好再开始"
+                        RootServiceStarter.State.RUNNING -> "Running"
+                        RootServiceStarter.State.STOPPED -> "Stopped"
+                        RootServiceStarter.State.UNKNOWN -> if (state.root == RootAccess.UNAVAILABLE) "Status temporarily unavailable" else "Ready to start"
                     }, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 }
                 IconButton(onClick = onCheck, enabled = !state.busy, modifier = Modifier.testTag("service_refresh")) {
                     if (state.operation == Operation.CHECK || state.operation == Operation.UPDATE)
                         CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = content)
-                    else Icon(Icons.Default.Refresh, "重新检查服务与模块")
+                    else Icon(Icons.Default.Refresh, "Recheck service and module")
                 }
             }
             Text(when (state.operation) {
-                Operation.UPDATE -> "正在将运行中的 Root 服务更新到当前版本…"
-                Operation.RESTART -> "正在等待系统界面重新加载模块…"
-                Operation.START -> "正在从当前安装包启动服务…"
-                Operation.STOP -> "正在取消任务并停止服务…"
-                Operation.ADJUST -> "正在收起当前答案，进入调整模式…"
-                else -> if (running) "长按状态栏电池区域进入连续答题；单击/双击电池可继续。"
-                    else "保存模型配置后，开启服务即可使用。"
+                Operation.UPDATE -> "Updating the running Root service to the current version…"
+                Operation.RESTART -> "Waiting for SystemUI to reload the module…"
+                Operation.START -> "Starting the service from the current APK…"
+                Operation.STOP -> "Canceling the task and stopping the service…"
+                Operation.ADJUST -> "Hiding the current answer and entering adjustment mode…"
+                else -> if (running) "Long-press the status-bar battery area for continuous answering; single- or double-tap the battery to continue."
+                    else "Save the model configuration, then start the service."
             }, style = MaterialTheme.typography.bodyMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                StatusPill(if (state.root == RootAccess.GRANTED) "Root 已授权" else "Root 待检查", content)
-                StatusPill(if (state.hookCurrent) "模块已生效" else "模块待就绪", content)
+                StatusPill(if (state.root == RootAccess.GRANTED) "Root granted" else "Root pending", content)
+                StatusPill(if (state.hookCurrent) "Module active" else "Module pending", content)
             }
             Button(onClick = onToggle, enabled = !state.busy && (running || (!state.saving && !state.searchSaving)),
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("service_control")) {
@@ -298,13 +298,13 @@ private fun ServiceCard(state: MainState, onToggle: () -> Unit, onCheck: () -> U
                 else Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(when (state.operation) {
-                    Operation.START -> "正在启动…"
-                    Operation.STOP -> "正在停止…"
-                    Operation.UPDATE -> "更新服务中…"
+                    Operation.START -> "Starting…"
+                    Operation.STOP -> "Stopping…"
+                    Operation.UPDATE -> "Updating…"
                     else -> when (state.service) {
-                        RootServiceStarter.State.RUNNING -> "停止"
-                        RootServiceStarter.State.STOPPED -> "开始"
-                        RootServiceStarter.State.UNKNOWN -> "授权并检查"
+                        RootServiceStarter.State.RUNNING -> "Stop"
+                        RootServiceStarter.State.STOPPED -> "Start"
+                        RootServiceStarter.State.UNKNOWN -> "Grant and check"
                     }
                 })
             }
@@ -313,11 +313,11 @@ private fun ServiceCard(state: MainState, onToggle: () -> Unit, onCheck: () -> U
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("adjustment_mode")) {
                 Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("调整模式")
+                Text("Adjustment Mode")
             }
-            Text(if (state.checkedAt == null) "首次使用需完成 Root 和 LSPosed 设置"
-                else "上次核对 " + android.text.format.DateFormat.format("HH:mm:ss", state.checkedAt) +
-                    if (running && state.serviceCurrent) " · 服务为当前版本" else " · 可点右上角刷新",
+            Text(if (state.checkedAt == null) "First use requires Root and LSPosed setup"
+                else "Last checked " + android.text.format.DateFormat.format("HH:mm:ss", state.checkedAt) +
+                    if (running && state.serviceCurrent) " · Service is current" else " · Tap refresh at upper right",
                 style = MaterialTheme.typography.labelSmall, color = content.copy(alpha = .7f))
         }
     }
@@ -340,35 +340,35 @@ private fun ConfigurationCard(state: MainState, onEdit: (ApiForm) -> Unit, onSav
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("模型配置", style = MaterialTheme.typography.titleLarge)
-                Text("使用支持图片输入的 OpenAI 兼容接口。连续答题时，双击可保留上一轮上下文。",
+                Text("Model Configuration", style = MaterialTheme.typography.titleLarge)
+                Text("Use an OpenAI-compatible endpoint that supports image input. During continuous answering, double-tap can retain the previous context.",
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             OutlinedTextField(form.address, { onEdit(form.copy(address = it)) }, modifier = Modifier.fillMaxWidth(),
-                label = { Text("接口地址") }, placeholder = { Text("https://api.example.com/v1") }, singleLine = true,
-                enabled = enabled, supportingText = { Text("支持基础地址或完整 /chat/completions 地址") },
+                label = { Text("API Endpoint") }, placeholder = { Text("https://api.example.com/v1") }, singleLine = true,
+                enabled = enabled, supportingText = { Text("Supports a base URL or a complete /chat/completions URL") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next))
             OutlinedTextField(form.key, { onEdit(form.copy(key = it)) }, modifier = Modifier.fillMaxWidth(),
                 label = { Text("API Key") }, singleLine = true, enabled = enabled,
                 visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = { TextButton(onClick = { showKey = !showKey }) { Text(if (showKey) "隐藏" else "显示") } },
+                trailingIcon = { TextButton(onClick = { showKey = !showKey }) { Text(if (showKey) "Hide" else "Show") } },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next))
             OutlinedTextField(form.model, { onEdit(form.copy(model = it)) }, modifier = Modifier.fillMaxWidth(),
-                label = { Text("模型名称") }, placeholder = { Text("填写支持视觉输入的模型 ID") }, singleLine = true, enabled = enabled,
+                label = { Text("Model Name") }, placeholder = { Text("Enter a model ID with vision support") }, singleLine = true, enabled = enabled,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { focus.clearFocus(); keyboard?.hide() }))
-            if (state.dirty) Text("有未保存的更改", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-            Text("检测会发送一张本地测试图片；启用搜索时也会核对工具调用。", style = MaterialTheme.typography.bodySmall,
+            if (state.dirty) Text("Unsaved changes", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            Text("The check sends a local test image. If search is enabled, it also verifies tool calls.", style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             FilledTonalButton(onClick = onSave, enabled = enabled, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("model_save_check")) {
                 if (state.saving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 else Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(if (state.saving) "正在检测…" else "检测并保存")
+                Text(if (state.saving) "Checking…" else "Check and Save")
             }
             state.modelCheck?.let { Text(it, style = MaterialTheme.typography.bodySmall,
                 color = if (state.modelCheckPassed == false) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary) }
-            if (state.saving) TextButton(onClick = onCancel, modifier = Modifier.testTag("cancel_model_check")) { Text("取消检测") }
+            if (state.saving) TextButton(onClick = onCancel, modifier = Modifier.testTag("cancel_model_check")) { Text("Cancel Check") }
         }
     }
 }
@@ -380,34 +380,34 @@ private fun SearchConfigurationCard(state: MainState, onEdit: (SearchForm) -> Un
     var showKey by remember { mutableStateOf(false) }
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text("DeepSeek 网页搜索", style = MaterialTheme.typography.titleLarge)
-            Text("让主模型在需要时搜索公开网页。启用后，主模型须同时支持图片输入与工具调用。",
+            Text("DeepSeek Web Search", style = MaterialTheme.typography.titleLarge)
+            Text("Let the main model search public web pages when needed. When enabled, the main model must support both image input and tool calls.",
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("允许 AI 按需搜索", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Text("Allow AI to search when needed", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(checked = form.enabled, onCheckedChange = { onEdit(form.copy(enabled = it)) }, enabled = enabled,
                     modifier = Modifier.testTag("search_enabled"))
             }
             OutlinedTextField(form.key, { onEdit(form.copy(key = it)) }, modifier = Modifier.fillMaxWidth().testTag("search_key"),
                 label = { Text("DeepSeek API Key") }, singleLine = true, enabled = enabled,
                 visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = { TextButton(onClick = { showKey = !showKey }) { Text(if (showKey) "隐藏" else "显示") } },
-                supportingText = { Text("使用 DeepSeek 平台 Key；关闭搜索会保留 Key。") },
+                trailingIcon = { TextButton(onClick = { showKey = !showKey }) { Text(if (showKey) "Hide" else "Show") } },
+                supportingText = { Text("Uses a DeepSeek platform key. Disabling search preserves the key.") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done))
-            if (state.searchDirty) Text("有未保存的更改", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-            Text("启用时会执行测试搜索；检测成功后保存。检测请求按接口计费规则处理。",
+            if (state.searchDirty) Text("Unsaved changes", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            Text("When enabled, AnsIt performs a test search and saves only after the check succeeds. The provider may charge for the check.",
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             FilledTonalButton(onClick = onSave, enabled = enabled,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("search_save_check")) {
                 if (state.searchSaving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 else Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(if (state.searchSaving) { if (form.enabled) "正在检测…" else "正在保存…" }
-                    else if (form.enabled) "检测并保存" else "保存关闭状态")
+                Text(if (state.searchSaving) { if (form.enabled) "Checking…" else "Saving…" }
+                    else if (form.enabled) "Check and Save" else "Save Disabled State")
             }
             state.searchCheck?.let { Text(it, style = MaterialTheme.typography.bodySmall,
                 color = if (state.searchCheckPassed == false) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary) }
-            if (state.searchSaving) TextButton(onClick = onCancel, modifier = Modifier.testTag("cancel_search_check")) { Text("取消检测") }
+            if (state.searchSaving) TextButton(onClick = onCancel, modifier = Modifier.testTag("cancel_search_check")) { Text("Cancel Check") }
         }
     }
 }
@@ -418,36 +418,36 @@ private fun SetupGuide(state: MainState, onCheck: () -> Unit, onRestart: () -> U
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("让 AnsIt 准备就绪", style = MaterialTheme.typography.headlineSmall)
-                Text("首次安装与升级后，可在这里检查。", style = MaterialTheme.typography.bodyMedium,
+                Text("Get AnsIt Ready", style = MaterialTheme.typography.headlineSmall)
+                Text("Check setup after the first install or an upgrade.", style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, "关闭使用引导") }
+            IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, "Close setup guide") }
         }
-        SetupStep("1", "允许 Root 权限", if (state.root == RootAccess.GRANTED) "Root 权限已确认。"
-            else "点击下方按钮，在 Root 管理器弹窗中允许 AnsIt；若曾拒绝，请先在管理器中改为允许。", state.root == RootAccess.GRANTED) {
+        SetupStep("1", "Grant Root Permission", if (state.root == RootAccess.GRANTED) "Root permission confirmed."
+            else "Tap below and allow AnsIt in the Root manager. If you previously denied it, change the setting to allow.", state.root == RootAccess.GRANTED) {
             FilledTonalButton(onClick = onCheck, enabled = !state.busy) {
-                Text(if (state.operation == Operation.CHECK) "等待授权与自检…" else if (state.root == RootAccess.GRANTED) "重新自检" else "授权并自检")
+                Text(if (state.operation == Operation.CHECK) "Waiting for authorization and check…" else if (state.root == RootAccess.GRANTED) "Check again" else "Grant and check")
             }
         }
         HorizontalDivider()
-        SetupStep("2", "激活 LSPosed 模块", "打开 LSPosed → 模块 → AnsIt，启用模块。作用域仅勾选“系统界面（com.android.systemui）”，然后返回这里。", state.hookCurrent) {
+        SetupStep("2", "Activate the LSPosed Module", "Open LSPosed → Modules → AnsIt and enable the module. Select only “SystemUI (com.android.systemui),” then return here.", state.hookCurrent) {
             Text(when {
-                state.hookCurrent -> "已确认：SystemUI 正在加载本版模块"
-                state.snapshot?.hook == RootServiceStarter.Hook.LOADED -> "检测到旧版模块，需重启系统界面"
-                state.snapshot?.hook == RootServiceStarter.Hook.ABSENT -> "尚未检测到本版模块，请核对作用域并重启系统界面"
-                else -> "模块状态待检查；仅开启模块开关还不够"
+                state.hookCurrent -> "Confirmed: SystemUI is loading this module version"
+                state.snapshot?.hook == RootServiceStarter.Hook.LOADED -> "An older module was detected; restart SystemUI"
+                state.snapshot?.hook == RootServiceStarter.Hook.ABSENT -> "This module version was not detected; verify the scope and restart SystemUI"
+                else -> "Module status pending; enabling the switch alone is not sufficient"
             }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
         }
         HorizontalDivider()
-        SetupStep("3", "重启系统界面使模块生效", "首次激活或模块升级后需要重启 SystemUI。状态栏和导航栏会短暂消失，系统随后会恢复。", state.hookCurrent) {
+        SetupStep("3", "Restart SystemUI to Apply the Module", "Restart SystemUI after first activation or after a module upgrade. The status and navigation bars will briefly disappear, then recover.", state.hookCurrent) {
             FilledTonalButton(onClick = onRestart, enabled = state.root == RootAccess.GRANTED && !state.busy) {
-                Text(if (state.operation == Operation.RESTART) "正在重启与核对…" else "重启 SystemUI")
+                Text(if (state.operation == Operation.RESTART) "Restarting and checking…" else "Restart SystemUI")
             }
         }
-        Text("完成后，填写并保存模型配置，再点击“开始”。",
+        Text("When complete, enter and save the model configuration, then tap “Start.”",
             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text(if (state.hookCurrent) "完成，去配置模型" else "知道了") }
+        Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text(if (state.hookCurrent) "Done; configure model" else "OK") }
     }
 }
 
@@ -457,7 +457,7 @@ private fun SetupStep(number: String, title: String, detail: String, done: Boole
         Surface(shape = CircleShape, color = if (done) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier.size(32.dp)) {
             Box(contentAlignment = Alignment.Center) {
-                if (done) Icon(Icons.Default.Check, contentDescription = "已完成", modifier = Modifier.size(18.dp))
+                if (done) Icon(Icons.Default.Check, contentDescription = "Completed", modifier = Modifier.size(18.dp))
                 else Text(number, style = MaterialTheme.typography.labelLarge)
             }
         }

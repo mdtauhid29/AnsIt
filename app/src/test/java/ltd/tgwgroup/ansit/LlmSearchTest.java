@@ -33,9 +33,9 @@ public class LlmSearchTest {
     }
     @Test public void modelCanAnswerWithoutCallingSearch() throws Exception {
         try (MockWebServer model = new MockWebServer(); MockWebServer search = new MockWebServer()) {
-            model.enqueue(new MockResponse().setBody(reply("计算结果为 4"))); model.start(); search.start();
+            model.enqueue(new MockResponse().setBody(reply("The result is 4"))); model.start(); search.start();
             LlmCall call = new LlmCall();
-            assertEquals("计算结果为 4", call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"),
+            assertEquals("The result is 4", call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"),
                 "frame", new DeepSeekSearch(call, SEARCH_KEY, search.url("/v1/tools/search").toString())));
             JSONObject sent = new JSONObject(model.takeRequest().getBody().readUtf8());
             assertEquals("auto", sent.getString("tool_choice")); assertTrue(sent.has("tools"));
@@ -44,11 +44,11 @@ public class LlmSearchTest {
     }
     @Test public void searchRoundTripKeepsCredentialsSeparateAndPreservesToolMetadata() throws Exception {
         try (MockWebServer model = new MockWebServer(); MockWebServer search = new MockWebServer()) {
-            model.enqueue(new MockResponse().setBody(tool("call_1", "最新公开资料")));
-            model.enqueue(new MockResponse().setBody(reply("已根据资料核对答案")));
+            model.enqueue(new MockResponse().setBody(tool("call_1", "Latest public information")));
+            model.enqueue(new MockResponse().setBody(reply("Verified answer using the references")));
             search.enqueue(results()); model.start(); search.start();
             LlmCall call = new LlmCall();
-            assertEquals("已根据资料核对答案", call.answerImage(
+            assertEquals("Verified answer using the references", call.answerImage(
                 new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"), "current-image-only",
                 new DeepSeekSearch(call, SEARCH_KEY, search.url("/v1/tools/search").toString())));
             var first = model.takeRequest(); var second = model.takeRequest(); var lookup = search.takeRequest();
@@ -57,7 +57,7 @@ public class LlmSearchTest {
             assertEquals("Bearer " + SEARCH_KEY, lookup.getHeader("Authorization"));
             assertEquals("/v1/tools/search", lookup.getPath());
             JSONObject query = new JSONObject(lookup.getBody().readUtf8());
-            assertEquals("最新公开资料", query.getString("query")); assertEquals(5, query.getInt("count"));
+            assertEquals("Latest public information", query.getString("query")); assertEquals(5, query.getInt("count"));
             assertFalse(query.getBoolean("need_content"));
             assertFalse(query.toString().contains("current-image-only"));
             assertFalse(query.toString().contains(MODEL_KEY)); assertFalse(query.toString().contains(SEARCH_KEY));
@@ -96,9 +96,9 @@ public class LlmSearchTest {
                 model.enqueue(new MockResponse().setBody(tool("call_0", "query-" + i)));
                 search.enqueue(results());
             }
-            model.enqueue(new MockResponse().setBody(reply("最终答案"))); model.start(); search.start();
+            model.enqueue(new MockResponse().setBody(reply("Final answer"))); model.start(); search.start();
             LlmCall call = new LlmCall();
-            assertEquals("最终答案", call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"),
+            assertEquals("Final answer", call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"),
                 "image", new DeepSeekSearch(call, SEARCH_KEY, search.url("/v1/tools/search").toString())));
             assertEquals(3, search.getRequestCount()); assertEquals(4, model.getRequestCount());
             model.takeRequest(); model.takeRequest(); model.takeRequest();
@@ -109,7 +109,7 @@ public class LlmSearchTest {
     @Test public void failedSearchIsReportedToModelWithoutLeakingResponseBodyOrFollowingRedirect() throws Exception {
         try (MockWebServer model = new MockWebServer(); MockWebServer search = new MockWebServer(); MockWebServer other = new MockWebServer()) {
             model.enqueue(new MockResponse().setBody(tool("call_1", "query")));
-            model.enqueue(new MockResponse().setBody(reply("本次未能取得联网资料")));
+            model.enqueue(new MockResponse().setBody(reply("Could not retrieve online information")));
             other.start();
             search.enqueue(new MockResponse().setResponseCode(302).setHeader("Location", other.url("/stolen")).setBody(SEARCH_KEY));
             model.start(); search.start();
@@ -156,7 +156,7 @@ public class LlmSearchTest {
             response.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getJSONArray("tool_calls")
                 .getJSONObject(0).getJSONObject("function").put("name", "run_shell");
             model.enqueue(new MockResponse().setBody(response.toString()));
-            model.enqueue(new MockResponse().setBody(reply("直接回答")));
+            model.enqueue(new MockResponse().setBody(reply("Answer directly")));
             model.start(); search.start();
             LlmCall call = new LlmCall();
             call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"), "image",
@@ -167,7 +167,7 @@ public class LlmSearchTest {
     @Test public void modelCredentialInToolArgumentsNeverReachesSearch() throws Exception {
         try (MockWebServer model = new MockWebServer(); MockWebServer search = new MockWebServer()) {
             model.enqueue(new MockResponse().setBody(tool("call_1", MODEL_KEY)));
-            model.enqueue(new MockResponse().setBody(reply("本次不搜索")));
+            model.enqueue(new MockResponse().setBody(reply("Do not search")));
             model.start(); search.start();
             LlmCall call = new LlmCall();
             call.answerImage(new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"), "image",
@@ -183,7 +183,7 @@ public class LlmSearchTest {
             search.start();
             JSONObject result = new DeepSeekSearch(new LlmCall(), SEARCH_KEY, search.url("/v1/tools/search").toString()).search("query");
             assertFalse(result.toString().contains(SEARCH_KEY));
-            assertTrue(result.toString().contains("[已隐藏]"));
+            assertTrue(result.toString().contains("[REDACTED]"));
         }
     }
     @Test public void oversizedParallelSearchBatchGetsBudgetResultsAndCanStillFinish() throws Exception {
@@ -196,10 +196,10 @@ public class LlmSearchTest {
                 calls.put(call);
             }
             model.enqueue(new MockResponse().setBody(initial.toString()));
-            model.enqueue(new MockResponse().setBody(reply("基于有限资料的答案")));
+            model.enqueue(new MockResponse().setBody(reply("Answer based on limited information")));
             for (int i = 0; i < 3; i++) search.enqueue(results());
             model.start(); search.start(); LlmCall call = new LlmCall();
-            assertEquals("基于有限资料的答案", call.answerImage(
+            assertEquals("Answer based on limited information", call.answerImage(
                 new ApiConfig(model.url("/v1").toString(), MODEL_KEY, "vision"), "image",
                 new DeepSeekSearch(call, SEARCH_KEY, search.url("/v1/tools/search").toString())));
             assertEquals(3, search.getRequestCount());
@@ -207,7 +207,7 @@ public class LlmSearchTest {
             JSONObject finalRequest = new JSONObject(model.takeRequest().getBody().readUtf8());
             assertEquals("none", finalRequest.getString("tool_choice"));
             assertEquals(8, finalRequest.getJSONArray("messages").length());
-            assertTrue(finalRequest.getJSONArray("messages").getJSONObject(6).getString("content").contains("本次搜索已结束"));
+            assertTrue(finalRequest.getJSONArray("messages").getJSONObject(6).getString("content").contains("Search has ended"));
         }
     }
 }

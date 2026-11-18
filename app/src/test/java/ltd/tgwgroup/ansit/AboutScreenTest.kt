@@ -29,9 +29,9 @@ class AboutScreenTest {
     @Test fun mainEntryAndBackPreserveSettingsDraft() {
         compose.setContent { AnsItTheme { AnsItContent(MainState(triggerText = "925", triggerLoading = false)) } }
         compose.onNodeWithTag("open_about").performClick()
-        compose.onNodeWithText("开发者").assertIsDisplayed()
-        compose.onNodeWithContentDescription("AntiOblivionis 的 GitHub 头像").assertIsDisplayed()
-        compose.onNodeWithText("版本 " + BuildConfig.VERSION_NAME).assertIsDisplayed()
+        compose.onNodeWithText("Developer").assertIsDisplayed()
+        compose.onNodeWithContentDescription("AntiOblivionis's GitHub avatar").assertIsDisplayed()
+        compose.onNodeWithText("Version " + BuildConfig.VERSION_NAME).assertIsDisplayed()
         render("about-light")
         compose.onNodeWithTag("about_back").performClick()
         compose.onNodeWithTag("trigger_millis").performScrollTo().assertTextContains("925")
@@ -49,16 +49,16 @@ class AboutScreenTest {
     @Test fun unavailableBrowserIsRecoverable() {
         compose.setContent { AnsItTheme { AboutScreen(onBack = {}, onOpenLink = { throw IllegalStateException("No browser") }) } }
         compose.onNodeWithTag("about_home").performScrollTo().performClick()
-        compose.onNodeWithText("暂时无法打开链接").assertIsDisplayed()
-        compose.onNodeWithText("知道了").performClick()
+        compose.onNodeWithText("Could not open link").assertIsDisplayed()
+        compose.onNodeWithText("OK").performClick()
         compose.onNodeWithTag("about_back").assertIsDisplayed()
     }
 
     @Test
-    @Config(qualifiers = "zh-rCN-w320dp-h900dp-night-xhdpi")
+    @Config(qualifiers = "en-rUS-w320dp-h900dp-night-xhdpi")
     fun narrowDarkLayoutKeepsLinksReachable() {
         compose.setContent { AnsItTheme(dark = true) { AboutScreen(onBack = {}) } }
-        compose.onNodeWithContentDescription("AntiOblivionis 的 GitHub 头像").assertIsDisplayed()
+        compose.onNodeWithContentDescription("AntiOblivionis's GitHub avatar").assertIsDisplayed()
         compose.onNodeWithTag("about_repository").performScrollTo().assertIsDisplayed()
         render("about-dark-320")
     }

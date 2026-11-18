@@ -38,37 +38,37 @@ class MainScreenTest {
     @Test fun stoppedButtonKeepsStartLabelDuringBackgroundCheck() {
         val state = mutableStateOf(status(false))
         compose.setContent { AnsItTheme { AnsItContent(state.value) } }
-        compose.onNodeWithTag("service_control").assertTextEquals("开始")
+        compose.onNodeWithTag("service_control").assertTextEquals("Start")
         compose.runOnIdle { state.value = state.value.copy(operation = Operation.CHECK) }
-        compose.onNodeWithTag("service_control").assertTextEquals("开始").assertIsNotEnabled()
+        compose.onNodeWithTag("service_control").assertTextEquals("Start").assertIsNotEnabled()
         compose.runOnIdle { state.value = state.value.copy(operation = Operation.NONE) }
-        compose.onNodeWithTag("service_control").assertTextEquals("开始")
+        compose.onNodeWithTag("service_control").assertTextEquals("Start")
         render("stopped-light")
     }
 
     @Test
-    @Config(qualifiers = "zh-rCN-w393dp-h900dp-night-xhdpi")
+    @Config(qualifiers = "en-rUS-w393dp-h900dp-night-xhdpi")
     fun runningButtonKeepsStopLabelDuringBackgroundCheck() {
         val state = mutableStateOf(status(true))
         compose.setContent { AnsItTheme(dark = true) { AnsItContent(state.value) } }
         compose.runOnIdle { state.value = state.value.copy(operation = Operation.CHECK) }
-        compose.onNodeWithTag("service_control").assertTextEquals("停止")
+        compose.onNodeWithTag("service_control").assertTextEquals("Stop")
         compose.runOnIdle { state.value = state.value.copy(operation = Operation.NONE) }
         render("running-dark")
     }
 
     @Test fun firstUseExplainsRootScopeAndRestartWithoutInventingGrantedState() {
         compose.setContent { AnsItTheme { AnsItContent(MainState(showGuide = true)) } }
-        compose.onNodeWithText("允许 Root 权限").assertIsDisplayed()
-        compose.onNodeWithText("激活 LSPosed 模块").assertIsDisplayed()
-        compose.onNodeWithText("重启 SystemUI").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithText("Grant Root Permission").assertIsDisplayed()
+        compose.onNodeWithText("Activate the LSPosed Module").assertIsDisplayed()
+        compose.onNodeWithText("Restart SystemUI").performScrollTo().assertIsNotEnabled()
         render("first-use", "setup_guide")
     }
 
     @Test fun failedStatusOffersCheckRatherThanPretendingStopped() {
         compose.setContent { AnsItTheme { AnsItContent(MainState(root = RootAccess.UNAVAILABLE)) } }
-        compose.onNodeWithTag("service_control").assertTextEquals("授权并检查")
-        compose.onNodeWithText("状态暂时不可用").assertIsDisplayed()
+        compose.onNodeWithTag("service_control").assertTextEquals("Grant and check")
+        compose.onNodeWithText("Status temporarily unavailable").assertIsDisplayed()
     }
 
     @Test fun controlUsesTheProvidedActionOnce() {

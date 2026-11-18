@@ -29,7 +29,7 @@ class ConfigurationUiTest {
     @Test fun modelSaveButtonStartsTheCheckAction() {
         var checks = 0
         compose.setContent { AnsItTheme { AnsItContent(MainState(), onSave = { checks++ }) } }
-        compose.onNodeWithTag("model_save_check").performScrollTo().assertTextEquals("检测并保存").performClick()
+        compose.onNodeWithTag("model_save_check").performScrollTo().assertTextEquals("Check and Save").performClick()
         compose.runOnIdle { assertEquals(1, checks) }
     }
     @Test fun searchConfigurationCanBeEnabledAndCheckedIndependently() {
@@ -38,7 +38,7 @@ class ConfigurationUiTest {
         compose.setContent { AnsItTheme { AnsItContent(state.value,
             onSearchEdit = { state.value = state.value.copy(search = it) }, onSearchSave = { checks++ }) } }
         compose.onNodeWithTag("search_enabled").performScrollTo().performClick()
-        compose.onNodeWithTag("search_save_check").performScrollTo().assertTextEquals("检测并保存").performClick()
+        compose.onNodeWithTag("search_save_check").performScrollTo().assertTextEquals("Check and Save").performClick()
         compose.runOnIdle { assertEquals(1, checks); assertEquals(true, state.value.search.enabled) }
         render("search-settings")
     }
@@ -47,14 +47,14 @@ class ConfigurationUiTest {
         val state = MainState(saving = true,
             snapshot = RootServiceStarter.Snapshot(RootServiceStarter.State.RUNNING, "", "", RootServiceStarter.Hook.ABSENT, "", ""))
         compose.setContent { AnsItTheme { AnsItContent(state, onCancelValidation = { cancels++ }) } }
-        compose.onNodeWithTag("service_control").assertTextEquals("停止").assertIsEnabled()
+        compose.onNodeWithTag("service_control").assertTextEquals("Stop").assertIsEnabled()
         compose.onNodeWithTag("model_save_check").performScrollTo().assertIsNotEnabled()
         compose.onNodeWithTag("cancel_model_check").performScrollTo().performClick()
         compose.runOnIdle { assertEquals(1, cancels) }
     }
     @Test fun disabledSearchHasAnExplicitSaveOffAction() {
         compose.setContent { AnsItTheme { AnsItContent(MainState(search = SearchForm(false, "expired-key"))) } }
-        compose.onNodeWithTag("search_save_check").performScrollTo().assertTextEquals("保存关闭状态").assertIsEnabled()
+        compose.onNodeWithTag("search_save_check").performScrollTo().assertTextEquals("Save Disabled State").assertIsEnabled()
     }
     private fun render(name: String) {
         val directory = System.getProperty("ansit.renderDir") ?: return

@@ -20,13 +20,13 @@ final class ServiceController {
     static RootServiceStarter.Snapshot start(Backend backend, String expected) throws Exception {
         backend.start();
         RootServiceStarter.Snapshot actual = backend.inspect();
-        if (!actual.serviceCurrent(expected)) throw new IOException("服务尚未确认加载当前版本，请重新检查");
+        if (!actual.serviceCurrent(expected)) throw new IOException("The service has not confirmed loading the current version. Please check again.");
         return actual;
     }
     static RootServiceStarter.Snapshot stop(Backend backend) throws Exception {
         backend.stop();
         RootServiceStarter.Snapshot actual = backend.inspect();
-        if (actual.state != RootServiceStarter.State.STOPPED) throw new IOException("服务尚未确认停止，请重新检查");
+        if (actual.state != RootServiceStarter.State.STOPPED) throw new IOException("The service has not confirmed it stopped. Please check again.");
         return actual;
     }
     private ServiceController() { }
